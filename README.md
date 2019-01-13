@@ -1,2 +1,2 @@
-# time-tracker
-Time tracker
+# Time tracker
+Easy-to-use web-based time tracker

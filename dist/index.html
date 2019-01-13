@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="bstm">
+<head>
+  <meta charset="UTF-8">
+  <title>Time Tracker</title>
+  <script src="/src.e31bb0bc.js"></script>
+<link rel="stylesheet" href="/src.e31bb0bc.css"></head>
+
+<body ng-controller="MainController as vm">
+  <div class="container">
+    <div ng-repeat="category in vm.tracker.categories track by $index">
+      <input type="text" placeholder="Name" ng-model="category.name">
+      <button ng-click="vm.startTracking(category)" ng-if="!vm.currentlyTracking(category)">Start Tracking</button>
+      <button ng-click="vm.endTracking(category)" ng-if="vm.currentlyTracking(category)">End Tracking</button>
+      <div ng-repeat="segment in category.segments track by $index">
+        <span class="datetime" ng-bind="vm.formatDate(segment)"></span>
+        <span class="difftime" ng-bind="vm.segmentTime(segment)"></span>
+      </div>
+    </div>
+    <button ng-click="vm.addCategory()">Add Category</button>
+  </div>
+</body>
+</html>
