@@ -1,8 +1,11 @@
 import angular from 'angular'
 window.angular = angular
+
 import moment from 'moment/src/moment'
 window.moment = moment
-import * as firebase from 'firebase'
+
+import * as firebase from 'firebase/app'
+import 'firebase/database'
 window.firebase = firebase
 
 import './sass/styles.scss'
