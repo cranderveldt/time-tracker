@@ -136,6 +136,11 @@ select.form-control {
   }
 }
 
+.tracker-button {
+  width: 80px;
+  text-align: center;
+}
+
 .flex-row {
   display: flex;
   align-items: center;
@@ -164,12 +169,20 @@ select.form-control {
   width: 25%;
 }
 
+.flex-dynamic {
+  flex-grow: 1;
+}
+
+.flex-static {
+  flex-grow: 0;
+}
+
 .flex-wrap {
   flex-wrap: wrap;
 }
 
 @each $schar, $space in (p: padding, m: margin) {
-  @each $number in (16, 32) {
+  @each $number in (8, 16, 32) {
     @each $dchar, $dir in (t: top, r: right, l: left, b: bottom) {
       .#{$dchar}#{$schar}-#{$number} {
         #{$space}-#{$dir}: #{$number}px;

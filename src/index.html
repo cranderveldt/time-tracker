@@ -8,16 +8,27 @@
 
 <body ng-controller="MainController as vm">
   <div class="container">
-    <div ng-repeat="category in vm.tracker.categories track by $index">
-      <input type="text" placeholder="Name" ng-model="category.name">
-      <button ng-click="vm.startTracking(category)" ng-if="!vm.currentlyTracking(category)">Start Tracking</button>
-      <button ng-click="vm.endTracking(category)" ng-if="vm.currentlyTracking(category)">End Tracking</button>
-      <div ng-repeat="segment in category.segments track by $index">
-        <span class="datetime" ng-bind="vm.formatDate(segment)"></span>
-        <span class="difftime" ng-bind="vm.segmentTime(segment)"></span>
+    <div class="bm-8" ng-repeat="category in vm.tracker.categories track by $index">
+      <div class="flex-row">
+        <div class="flex-dynamic">
+          <input class="form-control" type="text" placeholder="Name" ng-model="category.name">
+        </div>
+        <div class="flex-static">
+          <button class="btn btn-blue tracker-button" ng-click="vm.startTracking(category)" ng-if="!vm.currentlyTracking(category)">Start</button>
+          <button class="btn btn-red tracker-button" ng-click="vm.endTracking(category)" ng-if="vm.currentlyTracking(category)">Stop</button>
+        </div>
       </div>
     </div>
-    <button ng-click="vm.addCategory()">Add Category</button>
+    <div class="bm-32">
+      <button class="btn btn-gray" ng-click="vm.addCategory()">New</button>
+    </div>
+    <div class="bm-32" ng-repeat="category in vm.tracker.categories track by $index" ng-if="vm.anySegments(category)">
+      <h2 class="h24 bm-8" ng-bind="category.name"></h2>
+      <div class="flex-row" ng-repeat="segment in category.segments track by $index">
+        <span class="flex-dynamic difftime" ng-bind="vm.segmentTime(segment)"></span>
+        <span class="flex-static datetime" ng-bind="vm.formatDate(segment)"></span>
+      </div>
+    </div>
   </div>
 </body>
 </html>

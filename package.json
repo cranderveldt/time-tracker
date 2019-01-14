@@ -20,6 +20,7 @@
   "homepage": "https://github.com/cranderveldt/time-tracker#readme",
   "dependencies": {
     "angular": "^1.7.5",
+    "firebase": "^5.7.3",
     "moment": "^2.23.0"
   },
   "devDependencies": {

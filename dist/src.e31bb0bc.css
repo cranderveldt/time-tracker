@@ -113,6 +113,10 @@ select.form-control {
     background: #ddd;
     color: #aaa; }
 
+.tracker-button {
+  width: 80px;
+  text-align: center; }
+
 .flex-row {
   display: flex;
   align-items: center;
@@ -130,8 +134,37 @@ select.form-control {
 .flex-col-3 {
   width: 25%; }
 
+.flex-dynamic {
+  flex-grow: 1; }
+
+.flex-static {
+  flex-grow: 0; }
+
 .flex-wrap {
   flex-wrap: wrap; }
+
+.tp-8 {
+  padding-top: 8px; }
+
+.rp-8 {
+  padding-right: 8px; }
+
+.lp-8 {
+  padding-left: 8px; }
+
+.bp-8 {
+  padding-bottom: 8px; }
+
+.vp-8 {
+  padding-top: 8px;
+  padding-bottom: 8px; }
+
+.hp-8 {
+  padding-left: 8px;
+  padding-right: 8px; }
+
+.fp-8 {
+  padding: 8px; }
 
 .tp-16 {
   padding-top: 16px; }
@@ -178,6 +211,29 @@ select.form-control {
 
 .fp-32 {
   padding: 32px; }
+
+.tm-8 {
+  margin-top: 8px; }
+
+.rm-8 {
+  margin-right: 8px; }
+
+.lm-8 {
+  margin-left: 8px; }
+
+.bm-8 {
+  margin-bottom: 8px; }
+
+.vm-8 {
+  margin-top: 8px;
+  margin-bottom: 8px; }
+
+.hm-8 {
+  margin-left: 8px;
+  margin-right: 8px; }
+
+.fm-8 {
+  margin: 8px; }
 
 .tm-16 {
   margin-top: 16px; }
