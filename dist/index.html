@@ -24,7 +24,8 @@
     </div>
     <div class="bm-32" ng-repeat="category in vm.tracker.categories track by $index" ng-if="vm.anySegments(category)">
       <h2 class="h24 bm-8" ng-bind="category.name"></h2>
-      <div class="flex-row" ng-repeat="segment in category.segments track by $index">
+      <div ng-bind="vm.totalTimeToday(category)"></div>
+      <div class="flex-row" ng-repeat="segment in category.segments track by $index" ng-if="false">
         <span class="flex-dynamic difftime" ng-bind="vm.segmentTime(segment)"></span>
         <span class="flex-static datetime" ng-bind="vm.formatDate(segment)"></span>
       </div>

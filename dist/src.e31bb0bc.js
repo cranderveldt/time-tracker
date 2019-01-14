@@ -63512,7 +63512,7 @@ app.controller('MainController', ['$scope', '$window', '$interval', function ($s
 
   vm.segmentTime = function (segment) {
     var end = segment.end ? segment.end : Date.now();
-    return formatDiff((0, _moment.default)(end).diff((0, _moment.default)(segment.start), 'seconds'));
+    return formatDiff(diffTime(end, segment.start));
   };
 
   vm.anySegments = function (category) {
@@ -63531,6 +63531,25 @@ app.controller('MainController', ['$scope', '$window', '$interval', function ($s
     } else {
       return "".concat(Math.floor(time / 3600), "h ").concat(Math.floor(time % 3600 / 60), "m ").concat(time % 60, "s");
     }
+  };
+
+  var diffTime = function diffTime(end, start) {
+    return (0, _moment.default)(end).diff((0, _moment.default)(start), 'seconds');
+  };
+
+  var isTimeToday = function isTimeToday(time) {
+    return (0, _moment.default)(time).format('MM/DD/YYYY') === (0, _moment.default)(Date.now()).format('MM/DD/YYYY');
+  };
+
+  vm.totalTimeToday = function (category) {
+    var totalSeconds = category.segments.reduce(function (total, segment) {
+      if (isTimeToday(segment.start)) {
+        total = total + diffTime(segment.end ? segment.end : Date.now(), segment.start);
+      }
+
+      return total;
+    }, 0);
+    return formatDiff(totalSeconds);
   };
 
   onLoad();
@@ -63569,7 +63588,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51448" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62617" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

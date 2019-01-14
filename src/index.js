@@ -82,11 +82,10 @@ app.controller('MainController', [
 
     vm.segmentTime = segment => {
       const end = segment.end ? segment.end : Date.now()
-      return formatDiff(moment(end).diff(moment(segment.start), 'seconds'))
+      return formatDiff(diffTime(end, segment.start))
     }
 
     vm.anySegments = category => !!category.segments && category.segments.length > 0
-
     vm.formatDate = segment => moment(segment.start).format('MM/DD/YYYY HH:mm')
 
     const formatDiff = time => {
@@ -97,6 +96,19 @@ app.controller('MainController', [
       } else {
         return `${Math.floor(time/3600)}h ${Math.floor((time%3600)/60)}m ${time%60}s`
       }
+    }
+
+    const diffTime = (end, start) => moment(end).diff(moment(start), 'seconds')
+    const isTimeToday = time => moment(time).format('MM/DD/YYYY') === moment(Date.now()).format('MM/DD/YYYY')
+
+    vm.totalTimeToday = category => {
+      let totalSeconds = category.segments.reduce((total, segment) => {
+        if (isTimeToday(segment.start)) {
+          total = total + diffTime((segment.end ? segment.end : Date.now()), segment.start)
+        }
+        return total
+      }, 0)
+      return formatDiff(totalSeconds)
     }
 
     onLoad()
