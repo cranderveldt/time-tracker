@@ -63444,8 +63444,11 @@ var app = _angular.default.module('bstm', []);
 app.controller('MainController', ['$scope', '$window', '$interval', function ($scope, $window, $interval) {
   var vm = this;
   var myChange = false;
+  var wakingSeconds = 57600;
   vm.changeMe = 0;
-  vm.tracker = {};
+  vm.tracker = {
+    categories: []
+  };
 
   var onLoad = function onLoad() {
     var config = {
@@ -63512,18 +63515,18 @@ app.controller('MainController', ['$scope', '$window', '$interval', function ($s
 
   vm.segmentTime = function (segment) {
     var end = segment.end ? segment.end : Date.now();
-    return formatDiff(diffTime(end, segment.start));
+    return formatSeconds(diffTime(end, segment.start));
   };
 
   vm.anySegments = function (category) {
-    return !!category.segments && category.segments.length > 0;
+    return !!category && !!category.segments && category.segments.length > 0;
   };
 
   vm.formatDate = function (segment) {
     return (0, _moment.default)(segment.start).format('MM/DD/YYYY HH:mm');
   };
 
-  var formatDiff = function formatDiff(time) {
+  var formatSeconds = function formatSeconds(time) {
     if (time < 60) {
       return "".concat(time, "s");
     } else if (time < 3600) {
@@ -63541,15 +63544,23 @@ app.controller('MainController', ['$scope', '$window', '$interval', function ($s
     return (0, _moment.default)(time).format('MM/DD/YYYY') === (0, _moment.default)(Date.now()).format('MM/DD/YYYY');
   };
 
-  vm.totalTimeToday = function (category) {
-    var totalSeconds = category.segments.reduce(function (total, segment) {
+  var totalSecondsToday = function totalSecondsToday(category) {
+    return category.segments.reduce(function (total, segment) {
       if (isTimeToday(segment.start)) {
         total = total + diffTime(segment.end ? segment.end : Date.now(), segment.start);
       }
 
       return total;
     }, 0);
-    return formatDiff(totalSeconds);
+  };
+
+  vm.totalTimeToday = function (category) {
+    var totalSeconds = totalSecondsToday(category);
+    return formatSeconds(totalSeconds);
+  };
+
+  vm.percentageOfDay = function (category) {
+    return "".concat(Math.floor(totalSecondsToday(category) / wakingSeconds * 10000) / 100, "%");
   };
 
   onLoad();
@@ -63588,7 +63599,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62617" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52093" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

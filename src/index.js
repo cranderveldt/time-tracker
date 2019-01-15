@@ -18,8 +18,11 @@ app.controller('MainController', [
   function ($scope, $window, $interval) {
     const vm = this
     let myChange = false
+    const wakingSeconds = 57600
     vm.changeMe = 0
-    vm.tracker = {}
+    vm.tracker = {
+      categories: []
+    }
     
     const onLoad = () => {
       const config = {
@@ -82,13 +85,13 @@ app.controller('MainController', [
 
     vm.segmentTime = segment => {
       const end = segment.end ? segment.end : Date.now()
-      return formatDiff(diffTime(end, segment.start))
+      return formatSeconds(diffTime(end, segment.start))
     }
 
-    vm.anySegments = category => !!category.segments && category.segments.length > 0
+    vm.anySegments = category => !!category && !!category.segments && category.segments.length > 0
     vm.formatDate = segment => moment(segment.start).format('MM/DD/YYYY HH:mm')
 
-    const formatDiff = time => {
+    const formatSeconds = time => {
       if (time < 60) {
         return `${time}s`
       } else if (time < 3600) {
@@ -100,16 +103,21 @@ app.controller('MainController', [
 
     const diffTime = (end, start) => moment(end).diff(moment(start), 'seconds')
     const isTimeToday = time => moment(time).format('MM/DD/YYYY') === moment(Date.now()).format('MM/DD/YYYY')
-
-    vm.totalTimeToday = category => {
-      let totalSeconds = category.segments.reduce((total, segment) => {
+    const totalSecondsToday = category => {
+      return category.segments.reduce((total, segment) => {
         if (isTimeToday(segment.start)) {
           total = total + diffTime((segment.end ? segment.end : Date.now()), segment.start)
         }
         return total
       }, 0)
-      return formatDiff(totalSeconds)
     }
+
+    vm.totalTimeToday = category => {
+      let totalSeconds = totalSecondsToday(category)
+      return formatSeconds(totalSeconds)
+    }
+
+    vm.percentageOfDay = category => `${Math.floor(totalSecondsToday(category) / wakingSeconds * 10000) / 100}%`
 
     onLoad()
   }
