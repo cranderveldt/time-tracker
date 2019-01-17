@@ -63444,7 +63444,8 @@ var app = _angular.default.module('bstm', []);
 app.controller('MainController', ['$scope', '$window', '$interval', function ($scope, $window, $interval) {
   var vm = this;
   var myChange = false;
-  var wakingSeconds = 57600;
+  var wakingSecondsPerDay = 57600;
+  var wakingSecondsPerWeek = 403200;
   vm.changeMe = 0;
   vm.tracker = {
     categories: []
@@ -63560,7 +63561,31 @@ app.controller('MainController', ['$scope', '$window', '$interval', function ($s
   };
 
   vm.percentageOfDay = function (category) {
-    return "".concat(Math.floor(totalSecondsToday(category) / wakingSeconds * 10000) / 100, "%");
+    return "".concat(Math.floor(totalSecondsToday(category) / wakingSecondsPerDay * 10000) / 100, "%");
+  }; // Weekly
+
+
+  var isTimeThisWeek = function isTimeThisWeek(time) {
+    return (0, _moment.default)(time) > (0, _moment.default)().day(0);
+  };
+
+  var totalSecondsThisWeek = function totalSecondsThisWeek(category) {
+    return category.segments.reduce(function (total, segment) {
+      if (isTimeThisWeek(segment.start)) {
+        total = total + diffTime(segment.end ? segment.end : Date.now(), segment.start);
+      }
+
+      return total;
+    }, 0);
+  };
+
+  vm.totalTimeThisWeek = function (category) {
+    var totalSeconds = totalSecondsThisWeek(category);
+    return formatSeconds(totalSeconds);
+  };
+
+  vm.percentageOfWeek = function (category) {
+    return "".concat(Math.floor(totalSecondsThisWeek(category) / wakingSecondsPerWeek * 10000) / 100, "%");
   };
 
   onLoad();
@@ -63599,7 +63624,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52093" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61087" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

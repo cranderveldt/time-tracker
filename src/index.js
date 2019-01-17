@@ -18,7 +18,8 @@ app.controller('MainController', [
   function ($scope, $window, $interval) {
     const vm = this
     let myChange = false
-    const wakingSeconds = 57600
+    const wakingSecondsPerDay = 57600
+    const wakingSecondsPerWeek = 403200
     vm.changeMe = 0
     vm.tracker = {
       categories: []
@@ -117,7 +118,25 @@ app.controller('MainController', [
       return formatSeconds(totalSeconds)
     }
 
-    vm.percentageOfDay = category => `${Math.floor(totalSecondsToday(category) / wakingSeconds * 10000) / 100}%`
+    vm.percentageOfDay = category => `${Math.floor(totalSecondsToday(category) / wakingSecondsPerDay * 10000) / 100}%`
+
+    // Weekly
+    const isTimeThisWeek = time => moment(time) > moment().day(0)
+    const totalSecondsThisWeek = category => {
+      return category.segments.reduce((total, segment) => {
+        if (isTimeThisWeek(segment.start)) {
+          total = total + diffTime((segment.end ? segment.end : Date.now()), segment.start)
+        }
+        return total
+      }, 0)
+    }
+
+    vm.totalTimeThisWeek = category => {
+      let totalSeconds = totalSecondsThisWeek(category)
+      return formatSeconds(totalSeconds)
+    }
+
+    vm.percentageOfWeek = category => `${Math.floor(totalSecondsThisWeek(category) / wakingSecondsPerWeek * 10000) / 100}%`
 
     onLoad()
   }
