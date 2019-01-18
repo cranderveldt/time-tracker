@@ -4,6 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta charset="UTF-8">
   <title>Time Tracker</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="/src.e31bb0bc.js"></script>
 <link rel="stylesheet" href="/src.e31bb0bc.css"></head>
 
@@ -17,6 +18,9 @@
         <div class="flex-static">
           <button class="btn btn-blue tracker-button" ng-click="vm.startTracking(category)" ng-if="!vm.currentlyTracking(category)">Start</button>
           <button class="btn btn-red tracker-button" ng-click="vm.endTracking(category)" ng-if="vm.currentlyTracking(category)">Stop</button>
+        </div>
+        <div class="flex-static">
+          <button class="btn btn-icon" ng-click="vm.openAddSegmentModal(category)"><div class="material-icons">add</div></button>
         </div>
       </div>
     </div>
@@ -40,6 +44,31 @@
       <div class="flex-row" ng-repeat="segment in category.segments track by $index" ng-if="false">
         <span class="flex-dynamic difftime" ng-bind="vm.segmentTime(segment)"></span>
         <span class="flex-static datetime" ng-bind="vm.formatDate(segment)"></span>
+      </div>
+    </div>
+  </div>
+  <div class="modals" ng-class="{ showing: vm.showingModal }">
+    <div class="modal-bg" ng-click="vm.closeModal()"></div>
+    <div class="modal-content">
+      <div class="add-time-modal" ng-repeat="category in vm.activeCategoryAsArray()">
+        <div class="bm-32">
+          <h3 class="h18 bm-8">Start</h3>
+          <select ng-model="vm.newSegment.start.month" ng-options="option for option in vm.lists.months"></select>
+          <select ng-model="vm.newSegment.start.day" ng-options="option for option in vm.lists.days"></select>
+          <select ng-model="vm.newSegment.start.hour" ng-options="option for option in vm.lists.hours"></select>
+          <select ng-model="vm.newSegment.start.minute" ng-options="option for option in vm.lists.minutes"></select>
+          <select ng-model="vm.newSegment.start.second" ng-options="option for option in vm.lists.seconds"></select>
+        </div>
+        <div class="bm-32">
+          <h3 class="h18 bm-8">End</h3>
+          <select ng-model="vm.newSegment.end.month" ng-options="option for option in vm.lists.months"></select>
+          <select ng-model="vm.newSegment.end.day" ng-options="option for option in vm.lists.days"></select>
+          <select ng-model="vm.newSegment.end.hour" ng-options="option for option in vm.lists.hours"></select>
+          <select ng-model="vm.newSegment.end.minute" ng-options="option for option in vm.lists.minutes"></select>
+          <select ng-model="vm.newSegment.end.second" ng-options="option for option in vm.lists.seconds"></select>
+        </div>
+        <h3 class="h18 bm-32" ng-bind="vm.newSegmentLength()"></h3>
+        <button class="btn btn-blue" ng-click="vm.addSegment()">Add</button>
       </div>
     </div>
   </div>

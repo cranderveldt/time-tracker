@@ -24,6 +24,9 @@ app.controller('MainController', [
     vm.tracker = {
       categories: []
     }
+    vm.lists = {
+      months: moment.months()
+    }
     
     const onLoad = () => {
       const config = {
@@ -48,13 +51,35 @@ app.controller('MainController', [
         }
       })
 
+      populateLists()
+
       $interval(() => {
         vm.changeMe = vm.changeMe + Math.floor((Math.random() * 200) - 100)
       }, 1000)
     }
 
+    const populateLists = () => {
+      vm.lists.days = []
+      for (let i = 1; i <= 31; i++) {
+        vm.lists.days.push(i)
+      }
+
+      vm.lists.hours = []
+      for (let i = 0; i <= 23; i++) {
+        vm.lists.hours.push(i)
+      }
+
+      vm.lists.minutes = []
+      vm.lists.seconds = []
+      for (let i = 0; i <= 59; i++) {
+        vm.lists.minutes.push(i)
+        vm.lists.seconds.push(i)
+      }
+    }
+
     const saveData = () => {
       myChange = true
+      vm.tracker.categories.forEach(x => delete x.$$hashKey)
       vm.ref.set(vm.tracker)
     }
 
@@ -137,6 +162,52 @@ app.controller('MainController', [
     }
 
     vm.percentageOfWeek = category => `${Math.floor(totalSecondsThisWeek(category) / wakingSecondsPerWeek * 10000) / 100}%`
+
+    vm.closeModal = () => {
+      vm.showingModal = false
+      vm.activeCategory = null
+    }
+
+    vm.openAddSegmentModal = category => {
+      vm.showingModal = true
+      vm.activeCategory = category
+      const now = moment(Date.now())
+      vm.newSegment = {
+        start: {
+          month: now.format('MMMM'),
+          day: +now.format('D'),
+          hour: +now.format('H'),
+          minute: +now.format('m'),
+          second: +now.format('s'),
+        },
+        end: {
+          month: now.format('MMMM'),
+          day: +now.format('D'),
+          hour: +now.format('H'),
+          minute: +now.format('m'),
+          second: +now.format('s'),
+        }
+      }
+    }
+
+    const newSegmentMoment = (time) => {
+      return moment(`2019 ${time.month} ${time.day} ${time.hour} ${time.minute} ${time.second}`, 'YYYY MMMM D H m s')
+    }
+
+    vm.newSegmentLength = () => {
+      return formatSeconds(newSegmentMoment(vm.newSegment.end).diff(newSegmentMoment(vm.newSegment.start), 'seconds'))
+    }
+
+    vm.addSegment = () => {
+      vm.activeCategory.segments = vm.activeCategory.segments || []
+      vm.activeCategory.segments.push({
+        start: parseInt(newSegmentMoment(vm.newSegment.start).format('x')),
+        end: parseInt(newSegmentMoment(vm.newSegment.end).format('x'))
+      })
+      saveData()
+    }
+
+    vm.activeCategoryAsArray = () => vm.activeCategory ? [vm.activeCategory] : []
 
     onLoad()
   }

@@ -63450,6 +63450,9 @@ app.controller('MainController', ['$scope', '$window', '$interval', function ($s
   vm.tracker = {
     categories: []
   };
+  vm.lists = {
+    months: _moment.default.months()
+  };
 
   var onLoad = function onLoad() {
     var config = {
@@ -63472,13 +63475,39 @@ app.controller('MainController', ['$scope', '$window', '$interval', function ($s
         myChange = false;
       }
     });
+    populateLists();
     $interval(function () {
       vm.changeMe = vm.changeMe + Math.floor(Math.random() * 200 - 100);
     }, 1000);
   };
 
+  var populateLists = function populateLists() {
+    vm.lists.days = [];
+
+    for (var i = 1; i <= 31; i++) {
+      vm.lists.days.push(i);
+    }
+
+    vm.lists.hours = [];
+
+    for (var _i = 0; _i <= 23; _i++) {
+      vm.lists.hours.push(_i);
+    }
+
+    vm.lists.minutes = [];
+    vm.lists.seconds = [];
+
+    for (var _i2 = 0; _i2 <= 59; _i2++) {
+      vm.lists.minutes.push(_i2);
+      vm.lists.seconds.push(_i2);
+    }
+  };
+
   var saveData = function saveData() {
     myChange = true;
+    vm.tracker.categories.forEach(function (x) {
+      return delete x.$$hashKey;
+    });
     vm.ref.set(vm.tracker);
   };
 
@@ -63588,6 +63617,54 @@ app.controller('MainController', ['$scope', '$window', '$interval', function ($s
     return "".concat(Math.floor(totalSecondsThisWeek(category) / wakingSecondsPerWeek * 10000) / 100, "%");
   };
 
+  vm.closeModal = function () {
+    vm.showingModal = false;
+    vm.activeCategory = null;
+  };
+
+  vm.openAddSegmentModal = function (category) {
+    vm.showingModal = true;
+    vm.activeCategory = category;
+    var now = (0, _moment.default)(Date.now());
+    vm.newSegment = {
+      start: {
+        month: now.format('MMMM'),
+        day: +now.format('D'),
+        hour: +now.format('H'),
+        minute: +now.format('m'),
+        second: +now.format('s')
+      },
+      end: {
+        month: now.format('MMMM'),
+        day: +now.format('D'),
+        hour: +now.format('H'),
+        minute: +now.format('m'),
+        second: +now.format('s')
+      }
+    };
+  };
+
+  var newSegmentMoment = function newSegmentMoment(time) {
+    return (0, _moment.default)("2019 ".concat(time.month, " ").concat(time.day, " ").concat(time.hour, " ").concat(time.minute, " ").concat(time.second), 'YYYY MMMM D H m s');
+  };
+
+  vm.newSegmentLength = function () {
+    return formatSeconds(newSegmentMoment(vm.newSegment.end).diff(newSegmentMoment(vm.newSegment.start), 'seconds'));
+  };
+
+  vm.addSegment = function () {
+    vm.activeCategory.segments = vm.activeCategory.segments || [];
+    vm.activeCategory.segments.push({
+      start: parseInt(newSegmentMoment(vm.newSegment.start).format('x')),
+      end: parseInt(newSegmentMoment(vm.newSegment.end).format('x'))
+    });
+    saveData();
+  };
+
+  vm.activeCategoryAsArray = function () {
+    return vm.activeCategory ? [vm.activeCategory] : [];
+  };
+
   onLoad();
 }]);
 
@@ -63624,7 +63701,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61087" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51258" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
