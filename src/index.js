@@ -6,6 +6,7 @@ window.moment = moment
 
 import * as firebase from 'firebase/app'
 import 'firebase/database'
+import 'firebase/auth'
 window.firebase = firebase
 
 import './sass/styles.scss'
@@ -13,9 +14,9 @@ import './sass/styles.scss'
 const app = angular.module('bstm', []);
 app.controller('MainController', [
   '$scope',
-  '$window',
+  '$q',
   '$interval',
-  function ($scope, $window, $interval) {
+  function ($scope, $q, $interval) {
     const vm = this
     let myChange = false
     const wakingSecondsPerDay = 57600
@@ -37,25 +38,46 @@ app.controller('MainController', [
         storageBucket: "af-time-tracker.appspot.com",
         messagingSenderId: "72270102750"
       };
+
       firebase.initializeApp(config);
-      vm.ref = firebase.database().ref('user1');
 
-      vm.ref.on('value', snapshot => {
-        const val = snapshot.val()
-        vm.tracker.categories = val.categories
-        
-        if (!myChange) {
-          $scope.$digest()
-        } else {
-          myChange = false
-        }
+      authGoogle().then(user => {
+        vm.ref = firebase.database().ref(user.uid);
+  
+        vm.ref.on('value', snapshot => {
+          const val = snapshot.val()
+          vm.tracker.categories = val.categories
+          
+          if (!myChange) {
+            $scope.$digest()
+          } else {
+            myChange = false
+          }
+        })
+
+        populateLists()
+
+        $interval(() => {
+          vm.changeMe = vm.changeMe + Math.floor((Math.random() * 200) - 100)
+        }, 1000)
       })
+    }
 
-      populateLists()
-
-      $interval(() => {
-        vm.changeMe = vm.changeMe + Math.floor((Math.random() * 200) - 100)
-      }, 1000)
+    const authGoogle = () => {
+      const defer = $q.defer()
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          defer.resolve(user)
+        } else {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          firebase.auth().signInWithPopup(provider).then(result => {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            // var token = result.credential.accessToken;
+            defer.resolve(result.user)
+          })
+        }
+      });
+      return defer.promise
     }
 
     const populateLists = () => {
