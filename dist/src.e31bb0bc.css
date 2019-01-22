@@ -105,6 +105,15 @@ body {
   width: 100%;
   display: block; }
 
+.color-blue {
+  color: #1445ad; }
+
+.color-red {
+  color: #ad1414; }
+
+.color-gray {
+  color: gray; }
+
 .form-control {
   padding: 9px;
   background: white;

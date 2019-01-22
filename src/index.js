@@ -16,7 +16,8 @@ app.controller('MainController', [
   '$scope',
   '$q',
   '$interval',
-  function ($scope, $q, $interval) {
+  '$window',
+  function ($scope, $q, $interval, $window) {
     const vm = this
     let myChange = false
     const wakingSecondsPerDay = 57600
@@ -105,6 +106,14 @@ app.controller('MainController', [
       vm.ref.set(vm.tracker)
     }
 
+    vm.categoryOrder = predicate => category => {
+      if (!!category.segments && category.segments.length > 0) {
+        return category.segments.reduce((total, segment) => total + diffTime((segment.end ? segment.end : Date.now()), segment.start), 0)
+      } else {
+        return 0
+      }
+    }
+
     vm.addCategory = () => {
       vm.tracker.categories = vm.tracker.categories || []
       vm.tracker.categories.push({
@@ -112,6 +121,17 @@ app.controller('MainController', [
         segments: []
       })
       saveData()
+    }
+
+    const confirmWithAlert = (confirm, deny = () => {}, message = 'Are you sure you want to do this?') => {
+      $window.confirm(message) ? confirm() : deny()
+    };
+
+    vm.removeCategory = category => {
+      confirmWithAlert(() => {
+        const index = vm.tracker.categories.indexOf(category)
+        vm.tracker.categories.splice(index, 1)
+      }, () => {}, `Are you sure you want to delete this category? It has ${category.segments ? category.segments.length : 0} segments.`)
     }
 
     vm.startTracking = category => {
@@ -226,6 +246,13 @@ app.controller('MainController', [
         start: parseInt(newSegmentMoment(vm.newSegment.start).format('x')),
         end: parseInt(newSegmentMoment(vm.newSegment.end).format('x'))
       })
+      vm.closeModal()
+      saveData()
+    }
+
+    vm.removeSegment = (category, segment) => {
+      const index = category.segments.indexOf(segment)
+      category.segments.splice(index, 1)
       saveData()
     }
 

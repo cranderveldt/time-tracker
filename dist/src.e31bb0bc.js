@@ -72734,7 +72734,7 @@ window.firebase = firebase;
 
 var app = _angular.default.module('bstm', []);
 
-app.controller('MainController', ['$scope', '$q', '$interval', function ($scope, $q, $interval) {
+app.controller('MainController', ['$scope', '$q', '$interval', '$window', function ($scope, $q, $interval, $window) {
   var vm = this;
   var myChange = false;
   var wakingSecondsPerDay = 57600;
@@ -72823,6 +72823,18 @@ app.controller('MainController', ['$scope', '$q', '$interval', function ($scope,
     vm.ref.set(vm.tracker);
   };
 
+  vm.categoryOrder = function (predicate) {
+    return function (category) {
+      if (!!category.segments && category.segments.length > 0) {
+        return category.segments.reduce(function (total, segment) {
+          return total + diffTime(segment.end ? segment.end : Date.now(), segment.start);
+        }, 0);
+      } else {
+        return 0;
+      }
+    };
+  };
+
   vm.addCategory = function () {
     vm.tracker.categories = vm.tracker.categories || [];
     vm.tracker.categories.push({
@@ -72830,6 +72842,19 @@ app.controller('MainController', ['$scope', '$q', '$interval', function ($scope,
       segments: []
     });
     saveData();
+  };
+
+  var confirmWithAlert = function confirmWithAlert(confirm) {
+    var deny = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+    var message = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'Are you sure you want to do this?';
+    $window.confirm(message) ? confirm() : deny();
+  };
+
+  vm.removeCategory = function (category) {
+    confirmWithAlert(function () {
+      var index = vm.tracker.categories.indexOf(category);
+      vm.tracker.categories.splice(index, 1);
+    }, function () {}, "Are you sure you want to delete this category? It has ".concat(category.segments ? category.segments.length : 0, " segments."));
   };
 
   vm.startTracking = function (category) {
@@ -72970,6 +72995,13 @@ app.controller('MainController', ['$scope', '$q', '$interval', function ($scope,
       start: parseInt(newSegmentMoment(vm.newSegment.start).format('x')),
       end: parseInt(newSegmentMoment(vm.newSegment.end).format('x'))
     });
+    vm.closeModal();
+    saveData();
+  };
+
+  vm.removeSegment = function (category, segment) {
+    var index = category.segments.indexOf(segment);
+    category.segments.splice(index, 1);
     saveData();
   };
 
@@ -73013,7 +73045,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57697" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64794" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

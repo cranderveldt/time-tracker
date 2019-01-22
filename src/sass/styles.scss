@@ -127,6 +127,18 @@ body {
   display: block;
 }
 
+.color-blue {
+  color: $blue;
+}
+
+.color-red {
+  color: $red;
+}
+
+.color-gray {
+  color: $gray;
+}
+
 .form-control {
   padding: 9px;
   background: white;
