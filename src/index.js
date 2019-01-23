@@ -102,16 +102,22 @@ app.controller('MainController', [
 
     const saveData = () => {
       myChange = true
-      vm.tracker.categories.forEach(x => delete x.$$hashKey)
+      vm.tracker.categories.forEach(x => {
+        delete x.$$hashKey
+        delete x.$weeklyTotal
+        delete x.$dailyTotal
+        delete x.$total
+      })
       vm.ref.set(vm.tracker)
     }
 
-    vm.categoryOrder = predicate => category => {
-      if (!!category.segments && category.segments.length > 0) {
-        return category.segments.reduce((total, segment) => total + diffTime((segment.end ? segment.end : Date.now()), segment.start), 0)
+    vm.allTimeTotal = category => {
+      if (!category.segments || category.segments.length === 0) {
+        category.$total = 0
       } else {
-        return 0
+        category.$total = category.segments.reduce((total, segment) => total + diffTime((segment.end ? segment.end : Date.now()), segment.start), 0)
       }
+      return formatSeconds(category.$total)
     }
 
     vm.addCategory = () => {
@@ -181,8 +187,8 @@ app.controller('MainController', [
     }
 
     vm.totalTimeToday = category => {
-      let totalSeconds = totalSecondsToday(category)
-      return formatSeconds(totalSeconds)
+      category.$dailyTotal = totalSecondsToday(category)
+      return formatSeconds(category.$dailyTotal)
     }
 
     vm.percentageOfDay = category => `${Math.floor(totalSecondsToday(category) / wakingSecondsPerDay * 10000) / 100}%`
@@ -199,8 +205,8 @@ app.controller('MainController', [
     }
 
     vm.totalTimeThisWeek = category => {
-      let totalSeconds = totalSecondsThisWeek(category)
-      return formatSeconds(totalSeconds)
+      category.$weeklyTotal = totalSecondsThisWeek(category)
+      return formatSeconds(category.$weeklyTotal)
     }
 
     vm.percentageOfWeek = category => `${Math.floor(totalSecondsThisWeek(category) / wakingSecondsPerWeek * 10000) / 100}%`

@@ -72818,21 +72818,24 @@ app.controller('MainController', ['$scope', '$q', '$interval', '$window', functi
   var saveData = function saveData() {
     myChange = true;
     vm.tracker.categories.forEach(function (x) {
-      return delete x.$$hashKey;
+      delete x.$$hashKey;
+      delete x.$weeklyTotal;
+      delete x.$dailyTotal;
+      delete x.$total;
     });
     vm.ref.set(vm.tracker);
   };
 
-  vm.categoryOrder = function (predicate) {
-    return function (category) {
-      if (!!category.segments && category.segments.length > 0) {
-        return category.segments.reduce(function (total, segment) {
-          return total + diffTime(segment.end ? segment.end : Date.now(), segment.start);
-        }, 0);
-      } else {
-        return 0;
-      }
-    };
+  vm.allTimeTotal = function (category) {
+    if (!category.segments || category.segments.length === 0) {
+      category.$total = 0;
+    } else {
+      category.$total = category.segments.reduce(function (total, segment) {
+        return total + diffTime(segment.end ? segment.end : Date.now(), segment.start);
+      }, 0);
+    }
+
+    return formatSeconds(category.$total);
   };
 
   vm.addCategory = function () {
@@ -72922,8 +72925,8 @@ app.controller('MainController', ['$scope', '$q', '$interval', '$window', functi
   };
 
   vm.totalTimeToday = function (category) {
-    var totalSeconds = totalSecondsToday(category);
-    return formatSeconds(totalSeconds);
+    category.$dailyTotal = totalSecondsToday(category);
+    return formatSeconds(category.$dailyTotal);
   };
 
   vm.percentageOfDay = function (category) {
@@ -72946,8 +72949,8 @@ app.controller('MainController', ['$scope', '$q', '$interval', '$window', functi
   };
 
   vm.totalTimeThisWeek = function (category) {
-    var totalSeconds = totalSecondsThisWeek(category);
-    return formatSeconds(totalSeconds);
+    category.$weeklyTotal = totalSecondsThisWeek(category);
+    return formatSeconds(category.$weeklyTotal);
   };
 
   vm.percentageOfWeek = function (category) {
@@ -73045,7 +73048,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64794" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61381" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

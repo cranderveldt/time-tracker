@@ -10,7 +10,7 @@
 
 <body ng-controller="MainController as vm">
   <div class="container">
-    <div class="bm-8" ng-repeat="category in vm.tracker.categories | orderBy:vm.categoryOrder(predicate):true track by $index" ng-if="category">
+    <div class="bm-8" ng-repeat="category in vm.tracker.categories | orderBy:'$total':true track by $index" ng-if="category">
       <div class="flex-row">
         <div class="flex-dynamic">
           <input class="form-control" type="text" placeholder="Name" ng-model="category.name">
@@ -32,7 +32,7 @@
       <button class="btn btn-gray" ng-click="vm.addCategory()">New</button>
     </div>
 
-    <div class="bm-32" ng-repeat="category in vm.tracker.categories track by $index" ng-if="vm.anySegments(category)">
+    <div class="bm-32" ng-repeat="category in vm.tracker.categories | orderBy:'$dailyTotal':true track by $index" ng-if="vm.anySegments(category)">
       <h2 class="h24 bm-8" ng-bind="category.name"></h2>
       <div class="flex-row">
         <div class="flex-dynamic">
@@ -48,8 +48,11 @@
       </div>
     </div>
 
-    <div class="bm-32" ng-repeat="category in vm.tracker.categories track by $index" ng-if="vm.anySegments(category)">
-      <h2 class="h18 bm-8" ng-bind="category.name"></h2>
+    <div class="bm-32" ng-repeat="category in vm.tracker.categories | orderBy:'$total':true track by $index" ng-if="vm.anySegments(category)">
+      <div class="flex-row">
+        <h2 class="h18 bm-8 flex-dynamic" ng-bind="category.name"></h2>
+        <span class="flex-static" ng-bind="vm.allTimeTotal(category)"></span>
+      </div>
       <div class="flex-row" ng-repeat="segment in category.segments track by $index">
         <span class="flex-dynamic difftime" ng-bind="vm.segmentTime(segment)"></span>
         <span class="flex-static datetime" ng-bind="vm.formatDate(segment)"></span>
